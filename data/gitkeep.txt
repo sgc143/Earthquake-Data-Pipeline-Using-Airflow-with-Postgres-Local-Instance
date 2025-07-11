@@ -1,0 +1,2 @@
+# This file ensures the data directory is tracked in version control
+# The earthquake pipeline will create CSV files in this directory
