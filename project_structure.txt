@@ -1,0 +1,23 @@
+earthquake-data-pipeline/
+├── .devcontainer/
+│   └── devcontainer.json
+├── static/
+│   └── style.css
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   └── data.html
+├── data/
+│   ├── .gitkeep.txt
+│   ├── 20250709_earthquakedata.csv
+│   └── 20250710_earthquakedata.csv
+├── main.py
+├── earthquake_pipeline.py
+├── models.py
+├── config.py
+├── database.py
+├── setup.py
+├── README.md
+├── replit.md
+├── codespace-requirements.txt
+└── .gitignore
