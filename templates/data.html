@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Earthquake Data - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Earthquake Data</h1>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                <i data-feather="arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="database"></i>
+                    Processed Earthquake Data
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if earthquakes.items %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Location</th>
+                                    <th>Magnitude</th>
+                                    <th>Coordinates</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for earthquake in earthquakes.items %}
+                                <tr>
+                                    <td>{{ earthquake.ts.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    <td>{{ earthquake.place or 'Unknown Location' }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if earthquake.magnitude and earthquake.magnitude >= 5 else 'warning' if earthquake.magnitude and earthquake.magnitude >= 3 else 'info' }}">
+                                            {{ earthquake.magnitude or 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ earthquake.latitude }}, {{ earthquake.longitude }}
+                                        </small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav aria-label="Earthquake data pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if earthquakes.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('data_view', page=earthquakes.prev_num) }}">Previous</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for page_num in earthquakes.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != earthquakes.page %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('data_view', page=page_num) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page_num }}</span>
+                                        </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if earthquakes.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('data_view', page=earthquakes.next_num) }}">Next</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+
+                    <div class="text-center text-muted">
+                        <small>
+                            Showing {{ earthquakes.per_page * (earthquakes.page - 1) + 1 }} to 
+                            {{ earthquakes.per_page * earthquakes.page if earthquakes.page < earthquakes.pages else earthquakes.total }} 
+                            of {{ earthquakes.total }} earthquakes
+                        </small>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i data-feather="inbox" size="48"></i>
+                        <h4 class="mt-3">No earthquake data available</h4>
+                        <p>Run the pipeline to fetch and process earthquake data.</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i data-feather="arrow-left"></i>
+                            Go to Dashboard
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

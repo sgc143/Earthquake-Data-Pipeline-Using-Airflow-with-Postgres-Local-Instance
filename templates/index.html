@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Earthquake Data Pipeline Dashboard</h1>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#runPipelineModal">
+                <i data-feather="play"></i>
+                Run Pipeline
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="database"></i>
+                    Total Earthquakes
+                </h5>
+                <h2 class="text-primary">{{ total_earthquakes }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="activity"></i>
+                    Pipeline Runs
+                </h5>
+                <h2 class="text-info">{{ recent_runs|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="clock"></i>
+                    Last Run
+                </h5>
+                <h2 class="text-secondary">
+                    {% if recent_runs %}
+                        {{ recent_runs[0].created_at.strftime('%m/%d') }}
+                    {% else %}
+                        Never
+                    {% endif %}
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="list"></i>
+                    Recent Pipeline Runs
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_runs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Started</th>
+                                    <th>Completed</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for run in recent_runs %}
+                                <tr data-pipeline-id="{{ run.id }}">
+                                    <td>{{ run.execution_date }}</td>
+                                    <td>
+                                        <span class="badge status-badge {{ 'bg-success' if run.status == 'completed' else 'bg-danger' if run.status == 'failed' else 'bg-warning' if run.status == 'running' else 'bg-secondary' }}">
+                                            {{ run.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if run.started_at %}
+                                            {{ run.started_at.strftime('%H:%M') }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if run.completed_at %}
+                                            {{ run.completed_at.strftime('%H:%M') }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ run.message[:50] + '...' if run.message and run.message|length > 50 else run.message or '-' }}
+                                        </small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i data-feather="inbox"></i>
+                        <p>No pipeline runs found. Click "Run Pipeline" to start.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="map-pin"></i>
+                    Latest Earthquakes
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if latest_data %}
+                    {% for earthquake in latest_data %}
+                    <div class="mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ earthquake.place or 'Unknown Location' }}</h6>
+                                <small class="text-muted">{{ earthquake.ts.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <span class="badge bg-{{ 'danger' if earthquake.magnitude and earthquake.magnitude >= 5 else 'warning' if earthquake.magnitude and earthquake.magnitude >= 3 else 'info' }}">
+                                {{ earthquake.magnitude or 'N/A' }}
+                            </span>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i data-feather="map-pin"></i>
+                                {{ earthquake.latitude }}, {{ earthquake.longitude }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center">
+                        <a href="{{ url_for('data_view') }}" class="btn btn-sm btn-outline-primary">
+                            View All Data
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i data-feather="inbox"></i>
+                        <p>No earthquake data available.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Run Pipeline Modal -->
+<div class="modal fade" id="runPipelineModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Run Earthquake Pipeline</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('run_pipeline') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="execution_date" class="form-label">Execution Date</label>
+                        <input type="date" class="form-control" id="execution_date" name="execution_date" 
+                               value="{{ (moment().format('YYYY-MM-DD')) if moment else '' }}" required>
+                        <div class="form-text">Select the date for which to fetch earthquake data.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i data-feather="play"></i>
+                        Run Pipeline
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set today's date as default
+    document.getElementById('execution_date').value = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}
