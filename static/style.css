@@ -1,0 +1,183 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.875rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.alert {
+    border-radius: 6px;
+    border: none;
+}
+
+.modal-content {
+    border-radius: 8px;
+    border: none;
+}
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.pagination .page-link {
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.text-primary {
+    color: #0d6efd !important;
+}
+
+.text-info {
+    color: #0dcaf0 !important;
+}
+
+.text-secondary {
+    color: #6c757d !important;
+}
+
+.bg-success {
+    background-color: #198754 !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* Custom styles for earthquake data */
+.earthquake-item {
+    border-left: 4px solid #0d6efd;
+    padding-left: 12px;
+}
+
+.earthquake-item.high-magnitude {
+    border-left-color: #dc3545;
+}
+
+.earthquake-item.medium-magnitude {
+    border-left-color: #ffc107;
+}
+
+.earthquake-item.low-magnitude {
+    border-left-color: #198754;
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+}
